@@ -1,0 +1,345 @@
+{
+  "info": {
+    "_postman_id": "5c97a8b1-f8de-4e1d-9d7a-f5d0908c4f3a",
+    "name": "Express Products API - Prisma CRUD",
+    "description": "Request collection untuk menguji GET, POST, PUT, DELETE, validasi, dan produk yang tidak ditemukan. Jalankan request secara berurutan; ID produk disimpan otomatis.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "productId", "value": "", "type": "string" },
+    { "key": "createdProductId", "value": "", "type": "string" },
+    { "key": "missingProductId", "value": "2147483647", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "01 - GET all products (seeded data required)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/products" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('returns a non-empty product array', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.be.an('array').that.is.not.empty;",
+              "  pm.expect(body[0]).to.have.property('id');",
+              "  pm.collectionVariables.set('productId', String(body[0].id));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - GET product by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/products/{{productId}}" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('returns the requested product', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(String(body.id)).to.eql(pm.collectionVariables.get('productId'));",
+              "  pm.expect(body).to.have.property('name');",
+              "  pm.expect(body).to.have.property('price');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - GET missing product",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/products/{{missingProductId}}" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 404', function () { pm.response.to.have.status(404); });",
+              "pm.test('returns not-found message', function () {",
+              "  pm.expect(pm.response.json().message).to.eql('Produk tidak ditemukan');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - POST create product",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Produk Postman {{$timestamp}}\",\n  \"price\": 12000\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "{{baseUrl}}/products" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 201', function () { pm.response.to.have.status(201); });",
+              "pm.test('returns a created product', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body.id).to.be.a('number');",
+              "  pm.expect(body.name).to.include('Produk Postman');",
+              "  pm.expect(body.price).to.eql(12000);",
+              "  pm.collectionVariables.set('createdProductId', String(body.id));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - POST invalid empty name",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"  \",\n  \"price\": 12000\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "{{baseUrl}}/products" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 400', function () { pm.response.to.have.status(400); });",
+              "pm.test('returns validation message', function () {",
+              "  pm.expect(pm.response.json().message).to.eql('Nama dan harga produk tidak valid');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - POST invalid negative price",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Produk Uji\",\n  \"price\": -1\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "{{baseUrl}}/products" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 400', function () { pm.response.to.have.status(400); });",
+              "pm.test('returns validation message', function () {",
+              "  pm.expect(pm.response.json().message).to.eql('Nama dan harga produk tidak valid');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - PUT update created product",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": {{createdProductId}},\n  \"name\": \"Produk Postman Diubah\",\n  \"price\": 15000\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "{{baseUrl}}/products" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('returns updated values', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(String(body.id)).to.eql(pm.collectionVariables.get('createdProductId'));",
+              "  pm.expect(body.name).to.eql('Produk Postman Diubah');",
+              "  pm.expect(body.price).to.eql(15000);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - PUT invalid ID type",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"abc\",\n  \"name\": \"Produk Uji\",\n  \"price\": 1000\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "{{baseUrl}}/products" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 400', function () { pm.response.to.have.status(400); });",
+              "pm.test('returns invalid ID message', function () {",
+              "  pm.expect(pm.response.json().message).to.eql('ID produk tidak valid');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 - PUT missing product",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": {{missingProductId}},\n  \"name\": \"Produk Tidak Ada\",\n  \"price\": 1000\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "{{baseUrl}}/products" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 404', function () { pm.response.to.have.status(404); });",
+              "pm.test('returns not-found message', function () {",
+              "  pm.expect(pm.response.json().message).to.eql('Produk tidak ditemukan');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 - DELETE invalid ID",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/products/abc" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 400', function () { pm.response.to.have.status(400); });",
+              "pm.test('returns invalid ID message', function () {",
+              "  pm.expect(pm.response.json().message).to.eql('ID produk tidak valid');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 - DELETE missing product",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/products/{{missingProductId}}" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 404', function () { pm.response.to.have.status(404); });",
+              "pm.test('returns not-found message', function () {",
+              "  pm.expect(pm.response.json().message).to.eql('Produk tidak ditemukan');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 - DELETE created product",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/products/{{createdProductId}}" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('returns delete message', function () {",
+              "  pm.expect(pm.response.json().message).to.eql('Produk berhasil dihapus');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 - GET deleted product",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/products/{{createdProductId}}" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 404 after deletion', function () { pm.response.to.have.status(404); });",
+              "pm.test('returns not-found message', function () {",
+              "  pm.expect(pm.response.json().message).to.eql('Produk tidak ditemukan');",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

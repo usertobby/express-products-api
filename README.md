@@ -130,13 +130,13 @@ Semua request dengan body menggunakan JSON.
 
 | Method | Endpoint | Deskripsi | Hasil utama |
 |---|---|---|---|
-| GET | `/products` | Mengambil semua produk | `200 OK` |
-| GET | `/products/:id` | Mengambil produk berdasarkan ID | `200 OK`, atau `404 Not Found` |
-| POST | `/products` | Menambahkan produk | `201 Created`, atau `400 Bad Request` |
-| PUT | `/products` | Memperbarui produk berdasarkan `id` pada body | `200 OK`, `400 Bad Request`, atau `404 Not Found` |
-| DELETE | `/products/:id` | Menghapus produk berdasarkan ID | `200 OK`, `400 Bad Request`, atau `404 Not Found` |
+| GET | `/products` | Mengambil semua produk sebagai array | `200 OK` |
+| GET | `/products/:id` | Mengambil satu produk berdasarkan ID | `200 OK`; `404 Not Found` jika ID tidak valid atau produk tidak ditemukan |
+| POST | `/products` | Membuat produk baru | `201 Created`; `400 Bad Request` jika data tidak valid |
+| PUT | `/products` | Memperbarui produk; `id` dikirim pada body JSON | `200 OK`; `400 Bad Request` jika body/data/ID tidak valid; `404 Not Found` jika produk tidak ditemukan |
+| DELETE | `/products/:id` | Menghapus produk berdasarkan ID | `200 OK`; `400 Bad Request` jika format ID tidak valid; `404 Not Found` jika produk tidak ditemukan |
 
-Produk memiliki `id` otomatis, `name` berupa string, dan `price` berupa angka positif. Validasi yang gagal menghasilkan respons `400`. Produk atau ID yang tidak ditemukan menghasilkan respons `404`.
+Body POST dan PUT harus berisi `name` yang tidak kosong dan `price` berupa angka finite lebih besar dari nol. ID produk dibuat otomatis oleh PostgreSQL. ID pada body PUT harus berupa bilangan bulat positif. DELETE mengembalikan `400` untuk ID dengan format tidak valid, sedangkan ID valid yang tidak memiliki produk menghasilkan `404`.
 
 ### GET semua produk
 
@@ -144,14 +144,19 @@ Produk memiliki `id` otomatis, `name` berupa string, dan `price` berupa angka po
 GET http://localhost:3000/products
 ```
 
-Respons berupa array JSON, misalnya:
+Contoh respons `200 OK` setelah seed:
 
 ```json
 [
   {
     "id": 1,
-    "name": "Pensil",
-    "price": 3000
+    "name": "Buku",
+    "price": 15000
+  },
+  {
+    "id": 2,
+    "name": "Pulpen",
+    "price": 5000
   }
 ]
 ```
@@ -160,6 +165,24 @@ Respons berupa array JSON, misalnya:
 
 ```http
 GET http://localhost:3000/products/1
+```
+
+Contoh respons `200 OK`:
+
+```json
+{
+  "id": 1,
+  "name": "Buku",
+  "price": 15000
+}
+```
+
+Jika produk tidak ditemukan, misalnya `GET /products/999`, API mengembalikan `404 Not Found`:
+
+```json
+{
+  "message": "Produk tidak ditemukan"
+}
 ```
 
 ### POST produk baru
@@ -171,12 +194,22 @@ Content-Type: application/json
 
 ```json
 {
-  "name": "Pensil",
-  "price": 3000
+  "name": "Produk Postman",
+  "price": 12000
 }
 ```
 
-Nama tidak boleh kosong dan harga harus berupa angka positif yang valid.
+Contoh respons `201 Created`:
+
+```json
+{
+  "id": 3,
+  "name": "Produk Postman",
+  "price": 12000
+}
+```
+
+Nama tidak boleh kosong dan harga harus berupa angka positif yang valid. Jika validasi gagal, API mengembalikan `400 Bad Request` dengan pesan `Nama dan harga produk tidak valid`.
 
 ### PUT memperbarui produk
 
@@ -190,20 +223,38 @@ Content-Type: application/json
 ```json
 {
   "id": 1,
-  "name": "Pensil 2B",
-  "price": 3500
+  "name": "Buku Postman Diubah",
+  "price": 15000
 }
 ```
 
-ID harus berupa bilangan bulat positif. API mengembalikan `404` jika produk dengan ID tersebut tidak ditemukan.
+Contoh respons `200 OK` berisi data produk yang telah diperbarui:
+
+```json
+{
+  "id": 1,
+  "name": "Buku Postman Diubah",
+  "price": 15000
+}
+```
+
+ID harus berupa bilangan bulat positif. ID tidak valid menghasilkan `400 Bad Request`; ID produk yang tidak ditemukan menghasilkan `404 Not Found`.
 
 ### DELETE produk
 
 ```http
-DELETE http://localhost:3000/products/1
+DELETE http://localhost:3000/products/2
 ```
 
-Jika berhasil, respons berisi pesan `Produk berhasil dihapus`.
+Contoh ini menghapus Pulpen dengan ID `2`. Jika berhasil, API mengembalikan `200 OK`:
+
+```json
+{
+  "message": "Produk berhasil dihapus"
+}
+```
+
+ID tidak valid menghasilkan `400 Bad Request`, sedangkan ID yang tidak ditemukan menghasilkan `404 Not Found`. Setelah penghapusan, `GET /products/2` mengembalikan `404 Not Found`.
 
 ## Catatan database dan dependency
 

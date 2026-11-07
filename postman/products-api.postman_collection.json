@@ -1,108 +1,71 @@
 {
   "info": {
-    "_postman_id": "5c97a8b1-f8de-4e1d-9d7a-f5d0908c4f3a",
-    "name": "Express Products API - Prisma CRUD",
-    "description": "Request collection untuk menguji GET, POST, PUT, DELETE, validasi, dan produk yang tidak ditemukan. Jalankan request secara berurutan; ID produk disimpan otomatis.",
+    "name": "Products API - Urutan Testcase",
+    "description": "13 testcase untuk API produk. Jalankan npm run dev dan npx prisma db seed terlebih dahulu, lalu kirim request berurutan dari 01 sampai 13. Request ini mengikuti format mlbb-shop-testcase.postman_collection.json.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "variable": [
-    {
-      "key": "productId",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "createdProductId",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "missingProductId",
-      "value": "2147483647",
-      "type": "string"
-    }
-  ],
   "item": [
     {
-      "name": "01 - GET http://localhost:3000/products (seeded data required)",
+      "name": "01. Daftar Semua Produk",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:3000/products"
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
-              "pm.test('returns a non-empty product array', function () {",
-              "  const body = pm.response.json();",
-              "  pm.expect(body).to.be.an('array').that.is.not.empty;",
-              "  pm.expect(body[0]).to.have.property('id');",
-              "  pm.collectionVariables.set('productId', String(body[0].id));",
-              "});"
-            ]
-          }
-        }
-      ]
+          "raw": "http://localhost:3000/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products"
+          ]
+        },
+        "description": "GET /products\nHasil yang benar: 200, body berupa array produk."
+      }
     },
     {
-      "name": "02 - GET http://localhost:3000/products/{{productId}}",
+      "name": "02. Detail Produk Buku",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:3000/products/{{productId}}"
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
-              "pm.test('returns the requested product', function () {",
-              "  const body = pm.response.json();",
-              "  pm.expect(String(body.id)).to.eql(pm.collectionVariables.get('productId'));",
-              "  pm.expect(body).to.have.property('name');",
-              "  pm.expect(body).to.have.property('price');",
-              "});"
-            ]
-          }
-        }
-      ]
+          "raw": "http://localhost:3000/products/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products",
+            "1"
+          ]
+        },
+        "description": "GET /products/1\nPrasyarat: database sudah di-seed sehingga produk Buku memiliki id 1.\nHasil yang benar: 200, body berisi produk Buku."
+      }
     },
     {
-      "name": "03 - GET http://localhost:3000/products/2147483647",
+      "name": "03. Detail Produk Tidak Ada",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:3000/products/2147483647"
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test('returns 404', function () { pm.response.to.have.status(404); });",
-              "pm.test('returns not-found message', function () {",
-              "  pm.expect(pm.response.json().message).to.eql('Produk tidak ditemukan');",
-              "});"
-            ]
-          }
-        }
-      ]
+          "raw": "http://localhost:3000/products/999",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products",
+            "999"
+          ]
+        },
+        "description": "GET /products/999\nHasil yang benar: 404, pesan Produk tidak ditemukan."
+      }
     },
     {
-      "name": "04 - POST http://localhost:3000/products (create)",
+      "name": "04. Tambah Produk Pensil",
       "request": {
         "method": "POST",
         "header": [
@@ -111,40 +74,31 @@
             "value": "application/json"
           }
         ],
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products"
+          ]
+        },
+        "description": "POST /products\nHasil yang benar: 201, produk baru memiliki id otomatis.",
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"Produk Postman {{$timestamp}}\",\n  \"price\": 12000\n}",
+          "raw": "{\n  \"name\": \"Produk Postman\",\n  \"price\": 12000\n}",
           "options": {
             "raw": {
               "language": "json"
             }
           }
-        },
-        "url": {
-          "raw": "http://localhost:3000/products"
         }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test('returns 201', function () { pm.response.to.have.status(201); });",
-              "pm.test('returns a created product', function () {",
-              "  const body = pm.response.json();",
-              "  pm.expect(body.id).to.be.a('number');",
-              "  pm.expect(body.name).to.include('Produk Postman');",
-              "  pm.expect(body.price).to.eql(12000);",
-              "  pm.collectionVariables.set('createdProductId', String(body.id));",
-              "});"
-            ]
-          }
-        }
-      ]
+      }
     },
     {
-      "name": "05 - POST http://localhost:3000/products (invalid empty name)",
+      "name": "05. Tambah Produk Nama Kosong",
       "request": {
         "method": "POST",
         "header": [
@@ -153,36 +107,31 @@
             "value": "application/json"
           }
         ],
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products"
+          ]
+        },
+        "description": "POST /products\nHasil yang benar: 400, pesan Nama dan harga produk tidak valid.",
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"  \",\n  \"price\": 12000\n}",
+          "raw": "{\n  \"name\": \"\",\n  \"price\": 12000\n}",
           "options": {
             "raw": {
               "language": "json"
             }
           }
-        },
-        "url": {
-          "raw": "http://localhost:3000/products"
         }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test('returns 400', function () { pm.response.to.have.status(400); });",
-              "pm.test('returns validation message', function () {",
-              "  pm.expect(pm.response.json().message).to.eql('Nama dan harga produk tidak valid');",
-              "});"
-            ]
-          }
-        }
-      ]
+      }
     },
     {
-      "name": "06 - POST http://localhost:3000/products (invalid negative price)",
+      "name": "06. Tambah Produk Harga Negatif",
       "request": {
         "method": "POST",
         "header": [
@@ -191,6 +140,18 @@
             "value": "application/json"
           }
         ],
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products"
+          ]
+        },
+        "description": "POST /products\nHasil yang benar: 400, pesan Nama dan harga produk tidak valid.",
         "body": {
           "mode": "raw",
           "raw": "{\n  \"name\": \"Produk Uji\",\n  \"price\": -1\n}",
@@ -199,28 +160,11 @@
               "language": "json"
             }
           }
-        },
-        "url": {
-          "raw": "http://localhost:3000/products"
         }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test('returns 400', function () { pm.response.to.have.status(400); });",
-              "pm.test('returns validation message', function () {",
-              "  pm.expect(pm.response.json().message).to.eql('Nama dan harga produk tidak valid');",
-              "});"
-            ]
-          }
-        }
-      ]
+      }
     },
     {
-      "name": "07 - PUT http://localhost:3000/products (update)",
+      "name": "07. Perbarui Produk Buku",
       "request": {
         "method": "PUT",
         "header": [
@@ -229,39 +173,31 @@
             "value": "application/json"
           }
         ],
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products"
+          ]
+        },
+        "description": "PUT /products\nPrasyarat: produk Buku hasil seed memiliki id 1.\nHasil yang benar: 200, body berisi nama dan harga yang sudah diperbarui.",
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"id\": {{createdProductId}},\n  \"name\": \"Produk Postman Diubah\",\n  \"price\": 15000\n}",
+          "raw": "{\n  \"id\": 1,\n  \"name\": \"Buku Postman Diubah\",\n  \"price\": 15000\n}",
           "options": {
             "raw": {
               "language": "json"
             }
           }
-        },
-        "url": {
-          "raw": "http://localhost:3000/products"
         }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
-              "pm.test('returns updated values', function () {",
-              "  const body = pm.response.json();",
-              "  pm.expect(String(body.id)).to.eql(pm.collectionVariables.get('createdProductId'));",
-              "  pm.expect(body.name).to.eql('Produk Postman Diubah');",
-              "  pm.expect(body.price).to.eql(15000);",
-              "});"
-            ]
-          }
-        }
-      ]
+      }
     },
     {
-      "name": "08 - PUT http://localhost:3000/products (invalid ID)",
+      "name": "08. Perbarui Produk dengan ID Tidak Valid",
       "request": {
         "method": "PUT",
         "header": [
@@ -270,6 +206,18 @@
             "value": "application/json"
           }
         ],
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products"
+          ]
+        },
+        "description": "PUT /products\nHasil yang benar: 400, pesan ID produk tidak valid.",
         "body": {
           "mode": "raw",
           "raw": "{\n  \"id\": \"abc\",\n  \"name\": \"Produk Uji\",\n  \"price\": 1000\n}",
@@ -278,28 +226,11 @@
               "language": "json"
             }
           }
-        },
-        "url": {
-          "raw": "http://localhost:3000/products"
         }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test('returns 400', function () { pm.response.to.have.status(400); });",
-              "pm.test('returns invalid ID message', function () {",
-              "  pm.expect(pm.response.json().message).to.eql('ID produk tidak valid');",
-              "});"
-            ]
-          }
-        }
-      ]
+      }
     },
     {
-      "name": "09 - PUT http://localhost:3000/products (missing product)",
+      "name": "09. Perbarui Produk Tidak Ada",
       "request": {
         "method": "PUT",
         "header": [
@@ -308,129 +239,108 @@
             "value": "application/json"
           }
         ],
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products"
+          ]
+        },
+        "description": "PUT /products\nHasil yang benar: 404, pesan Produk tidak ditemukan.",
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"id\": {{missingProductId}},\n  \"name\": \"Produk Tidak Ada\",\n  \"price\": 1000\n}",
+          "raw": "{\n  \"id\": 999,\n  \"name\": \"Produk Tidak Ada\",\n  \"price\": 1000\n}",
           "options": {
             "raw": {
               "language": "json"
             }
           }
+        }
+      }
+    },
+    {
+      "name": "10. Hapus dengan ID Tidak Valid",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/products/abc",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products",
+            "abc"
+          ]
         },
-        "url": {
-          "raw": "http://localhost:3000/products"
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test('returns 404', function () { pm.response.to.have.status(404); });",
-              "pm.test('returns not-found message', function () {",
-              "  pm.expect(pm.response.json().message).to.eql('Produk tidak ditemukan');",
-              "});"
-            ]
-          }
-        }
-      ]
+        "description": "DELETE /products/abc\nHasil yang benar: 400, pesan ID produk tidak valid."
+      }
     },
     {
-      "name": "10 - DELETE http://localhost:3000/products/abc (invalid ID)",
+      "name": "11. Hapus Produk Tidak Ada",
       "request": {
         "method": "DELETE",
         "header": [],
         "url": {
-          "raw": "http://localhost:3000/products/abc"
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test('returns 400', function () { pm.response.to.have.status(400); });",
-              "pm.test('returns invalid ID message', function () {",
-              "  pm.expect(pm.response.json().message).to.eql('ID produk tidak valid');",
-              "});"
-            ]
-          }
-        }
-      ]
+          "raw": "http://localhost:3000/products/999",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products",
+            "999"
+          ]
+        },
+        "description": "DELETE /products/999\nHasil yang benar: 404, pesan Produk tidak ditemukan."
+      }
     },
     {
-      "name": "11 - DELETE http://localhost:3000/products/2147483647 (missing product)",
+      "name": "12. Hapus Produk Pulpen",
       "request": {
         "method": "DELETE",
         "header": [],
         "url": {
-          "raw": "http://localhost:3000/products/2147483647"
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test('returns 404', function () { pm.response.to.have.status(404); });",
-              "pm.test('returns not-found message', function () {",
-              "  pm.expect(pm.response.json().message).to.eql('Produk tidak ditemukan');",
-              "});"
-            ]
-          }
-        }
-      ]
+          "raw": "http://localhost:3000/products/2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products",
+            "2"
+          ]
+        },
+        "description": "DELETE /products/2\nPrasyarat: produk Pulpen hasil seed memiliki id 2.\nHasil yang benar: 200, pesan Produk berhasil dihapus."
+      }
     },
     {
-      "name": "12 - DELETE http://localhost:3000/products/{{createdProductId}}",
-      "request": {
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:3000/products/{{createdProductId}}"
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
-              "pm.test('returns delete message', function () {",
-              "  pm.expect(pm.response.json().message).to.eql('Produk berhasil dihapus');",
-              "});"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "name": "13 - GET http://localhost:3000/products/{{createdProductId}} (after delete)",
+      "name": "13. Detail Produk Setelah Dihapus",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:3000/products/{{createdProductId}}"
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test('returns 404 after deletion', function () { pm.response.to.have.status(404); });",
-              "pm.test('returns not-found message', function () {",
-              "  pm.expect(pm.response.json().message).to.eql('Produk tidak ditemukan');",
-              "});"
-            ]
-          }
-        }
-      ]
+          "raw": "http://localhost:3000/products/2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products",
+            "2"
+          ]
+        },
+        "description": "GET /products/2\nJalankan setelah testcase 12.\nHasil yang benar: 404, pesan Produk tidak ditemukan."
+      }
     }
   ]
 }

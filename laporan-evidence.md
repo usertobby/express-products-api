@@ -8,7 +8,7 @@
 
 ## Tujuan
 
-Laporan ini mencatat skenario pengujian API produk dengan Express, Prisma, dan PostgreSQL. Jalankan request dari atas ke bawah menggunakan collection `postman/products-api.postman_collection.json`; beberapa request memakai ID yang disimpan otomatis oleh collection.
+Laporan ini mencatat skenario pengujian API produk dengan Express, Prisma, dan PostgreSQL. Collection `postman/products-api.postman_collection.json` mengikuti format file referensi, dengan URL lengkap localhost dan deskripsi hasil yang diharapkan pada setiap request.
 
 ## Persiapan
 
@@ -24,8 +24,8 @@ Laporan ini mencatat skenario pengujian API produk dengan Express, Prisma, dan P
    npm run dev
    ```
 
-4. Import file collection ke Postman. Base URL collection menggunakan `http://localhost:3000`.
-5. Jalankan semua request berurutan melalui Collection Runner. Seed mengisi dua produk contoh hanya jika tabel masih kosong.
+4. Import file collection ke Postman. Semua URL memakai `http://localhost:3000` dan endpoint yang sesuai.
+5. Jalankan request secara berurutan. Testcase detail dan hapus mengasumsikan database baru yang di-seed: `Buku` memiliki ID 1 dan `Pulpen` memiliki ID 2. Jika ID berbeda, sesuaikan path atau ID pada body request. Seed hanya menambahkan produk contoh jika tabel masih kosong.
 
 ### Melihat tabel Product di pgAdmin
 

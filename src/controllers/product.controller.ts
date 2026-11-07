@@ -59,3 +59,58 @@ export async function createProduct(req: Request, res: Response): Promise<void> 
 
   res.status(201).json(newProduct);
 }
+
+// PUT /products
+export async function updateProduct(req: Request, res: Response): Promise<void> {
+  const body: unknown = req.body;
+
+  if (body === null || typeof body !== 'object' || Array.isArray(body)) {
+    res.status(400).json({
+      message: 'Data produk tidak valid',
+    });
+    return;
+  }
+
+  const { id, name, price } = body as Record<string, unknown>;
+
+  if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
+    res.status(400).json({
+      message: 'ID produk tidak valid',
+    });
+    return;
+  }
+
+  if (
+    typeof name !== 'string' ||
+    name.trim() === '' ||
+    typeof price !== 'number' ||
+    !Number.isFinite(price) ||
+    price <= 0
+  ) {
+    res.status(400).json({
+      message: 'Nama dan harga produk tidak valid',
+    });
+    return;
+  }
+
+  const existingProduct = await prisma.product.findUnique({
+    where: { id },
+  });
+
+  if (!existingProduct) {
+    res.status(404).json({
+      message: 'Produk tidak ditemukan',
+    });
+    return;
+  }
+
+  const updatedProduct = await prisma.product.update({
+    where: { id },
+    data: {
+      name: name.trim(),
+      price,
+    },
+  });
+
+  res.status(200).json(updatedProduct);
+}

@@ -217,9 +217,4 @@ Jika berhasil, respons berisi pesan `Produk berhasil dihapus`.
 - [Laporan evidence dan hasil 13 testcase](laporan-evidence.md)
 - [Postman collection untuk API produk](postman/products-api.postman_collection.json)
 - Screenshot database dan testcase minggu ke-10 tersedia di `assets/week10/`.
-- Screenshot tugas minggu ke-9 dipertahankan di `assets/week9/`:
-  - [GET semua produk](assets/week9/%5BGET%5D%20All-Products.png)
-  - [GET semua produk setelah POST](assets/week9/%5BGET%5D%20All-Products-After-POST.png)
-  - [GET produk berdasarkan ID](assets/week9/%5BGET%5D%20Product-by-ID.png)
-  - [POST membuat produk](assets/week9/%5BPOST%5D%20Create-Product.png)
-  - [Produk tidak ditemukan](assets/week9/%5B404%5D%20Product-Not-Found.png)
+- Screenshot tugas minggu ke-9 tersedia di [galeri Week 9](assets/week9/README.md).

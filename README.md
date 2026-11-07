@@ -18,6 +18,39 @@ REST API untuk mengelola data produk menggunakan Express.js, TypeScript, Prisma 
 - Prisma ORM
 - Postman untuk mencoba endpoint
 
+## Struktur proyek
+
+```text
+express-products-api/
+├── assets/
+│   ├── week9/                  # Screenshot tugas minggu ke-9
+│   └── week10/
+│       ├── database/           # Bukti perubahan data PostgreSQL
+│       └── test-cases/         # Screenshot 13 testcase Postman
+├── postman/
+│   └── products-api.postman_collection.json
+├── prisma/
+│   ├── migrations/             # Riwayat perubahan struktur database
+│   ├── schema.prisma           # Model Product
+│   └── seed.ts                 # Data contoh Buku dan Pulpen
+├── src/
+│   ├── controllers/
+│   │   └── product.controller.ts
+│   ├── lib/
+│   │   └── prisma.ts           # Prisma Client dan adapter PostgreSQL
+│   ├── routes/
+│   │   └── product.routes.ts
+│   ├── app.ts
+│   └── index.ts
+├── .env.example              # Template DATABASE_URL lokal
+├── .gitignore
+├── laporan-evidence.md         # Hasil testcase dan bukti screenshot
+├── prisma7.config.ts
+├── package.json
+├── package-lock.json
+└── tsconfig.json
+```
+
 ## Menjalankan proyek
 
 ### 1. Siapkan PostgreSQL
@@ -178,3 +211,15 @@ Jika berhasil, respons berisi pesan `Produk berhasil dihapus`.
 - File `.env` dan kredensial PostgreSQL bersifat lokal dan tidak dimasukkan ke Git. Setiap pengguna perlu menyiapkan database serta `.env` sendiri.
 - Migration mencatat struktur tabel, sedangkan seed menyiapkan data contoh secara eksplisit. Produk juga dapat ditambahkan melalui endpoint POST.
 - PostgreSQL dapat dijalankan secara lokal; Docker tidak diperlukan untuk menjalankan proyek ini.
+
+## Bukti pengujian dan screenshot
+
+- [Laporan evidence dan hasil 13 testcase](laporan-evidence.md)
+- [Postman collection untuk API produk](postman/products-api.postman_collection.json)
+- Screenshot database dan testcase minggu ke-10 tersedia di `assets/week10/`.
+- Screenshot tugas minggu ke-9 dipertahankan di `assets/week9/`:
+  - [GET semua produk](assets/week9/%5BGET%5D%20All-Products.png)
+  - [GET semua produk setelah POST](assets/week9/%5BGET%5D%20All-Products-After-POST.png)
+  - [GET produk berdasarkan ID](assets/week9/%5BGET%5D%20Product-by-ID.png)
+  - [POST membuat produk](assets/week9/%5BPOST%5D%20Create-Product.png)
+  - [Produk tidak ditemukan](assets/week9/%5B404%5D%20Product-Not-Found.png)

@@ -1,85 +1,137 @@
-# Tugas: API Daftar Produk
+# API Daftar Produk: PostgreSQL dan Prisma
 
 ## Identitas
-Nama    : I Made Tobby Anantha Adiwijaya  
-NRP     : 5027251064  
-Kelas   : Pemrograman Web (C)  
+
+- Nama: I Made Tobby Anantha Adiwijaya
+- NRP: 5027251064
+- Kelas: Pemrograman Web (C)
 
 ## Deskripsi
-Proyek ini merupakan tugas kelas, yakni Tugas: API Daftar Produk. Di sini kita implementasikan REST API sederhana menggunakan ExpressJS dan TypeScript untuk mengelola data produk.
 
-## Persyaratan
-Beberapa hal yang diperlukan:
+REST API untuk mengelola data produk menggunakan Express.js, TypeScript, Prisma ORM, dan PostgreSQL. Data produk disimpan di database sehingga tetap tersedia setelah server Express dimulai ulang.
+
+## Teknologi
+
 - Node.js dan npm
-- Visual Studio Code
-- Postman
+- Express.js dan TypeScript
+- PostgreSQL
+- Prisma ORM
+- Postman untuk mencoba endpoint
 
-## Cara Menjalankan Program
+## Menjalankan proyek
 
-1. **Download atau clone repository**, kemudian buka folder proyek menggunakan Visual Studio Code.
+### 1. Siapkan PostgreSQL
 
-2. **Buka terminal** pada folder proyek.
+Pastikan server PostgreSQL berjalan dan buat database bernama `products_db` melalui pgAdmin atau SQL:
 
-3. **Install dependencies** dengan menjalankan perintah:
-
-   ```bash
-   npm install
-   ```
-
-4. **Jalankan server dalam mode development** menggunakan perintah:
-
-   ```bash
-   npm run dev
-   ```
-
-5. Jika berhasil, terminal akan menampilkan:
-
-   ```text
-   Server berjalan di http://localhost:3000
-   ```
-
-6. Server sekarang sudah berjalan dan dapat diuji menggunakan Postman.
-
-## Daftar Endpoint API
-
-| Method | Endpoint | Deskripsi |
-|---|---|---|
-| GET | `/products` | Mengambil seluruh data produk |
-| GET | `/products/:id` | Mengambil data produk berdasarkan ID, di contoh pakai ID = 1 |
-| GET | `/products/999` | Menguji coba produk tidak ditemukan |
-| POST | `/products` | Menambahkan produk baru |
-
-### Contoh Pengujian
-
-**1. GET Semua Produk**
-
-URL:
-```text
-http://localhost:3000/products
+```sql
+CREATE DATABASE products_db;
 ```
 
-**2. GET Produk Berdasarkan ID**
+### 2. Pasang dependency
 
-URL:
-```text
-http://localhost:3000/products/1
+Clone repository, buka folder proyek, lalu jalankan:
+
+```bash
+npm install
 ```
 
-**3. GET Produk dengan ID Tidak Ditemukan**
+### 3. Atur koneksi database
 
-URL:
-```text
-http://localhost:3000/products/999
+Salin `.env.example` menjadi `.env`:
+
+```powershell
+Copy-Item .env.example .env
 ```
 
-**4. POST Tambah Produk**
+Di macOS atau Linux, gunakan:
 
-URL:
-```text
-http://localhost:3000/products
+```bash
+cp .env.example .env
 ```
 
-Pilih Body, lalu klik raw, pilih opsi JSON, kemudian masukkan contoh:
+Edit `DATABASE_URL` di `.env` sesuai username, password, host, port, dan nama database PostgreSQL Anda:
+
+```env
+DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/products_db?schema=public"
+```
+
+Ganti `USER` dan `PASSWORD` dengan kredensial PostgreSQL lokal. Jika password berisi karakter khusus URL, lakukan URL encoding. Jangan commit `.env`; file tersebut berisi kredensial dan sudah diabaikan Git.
+
+### 4. Buat Prisma Client dan terapkan migration
+
+```bash
+npx prisma generate
+npx prisma migrate dev
+```
+
+Migration membuat tabel `Product` di database. Untuk melihat status migration:
+
+```bash
+npx prisma migrate status
+```
+
+### 5. Jalankan server
+
+Mode pengembangan:
+
+```bash
+npm run dev
+```
+
+Server berjalan di `http://localhost:3000`.
+
+Untuk menjalankan versi hasil build:
+
+```bash
+npm run build
+npm start
+```
+
+## Endpoint API
+
+Semua request dengan body menggunakan JSON.
+
+| Method | Endpoint | Deskripsi | Hasil utama |
+|---|---|---|---|
+| GET | `/products` | Mengambil semua produk | `200 OK` |
+| GET | `/products/:id` | Mengambil produk berdasarkan ID | `200 OK`, atau `404 Not Found` |
+| POST | `/products` | Menambahkan produk | `201 Created`, atau `400 Bad Request` |
+| PUT | `/products` | Memperbarui produk berdasarkan `id` pada body | `200 OK`, `400 Bad Request`, atau `404 Not Found` |
+| DELETE | `/products/:id` | Menghapus produk berdasarkan ID | `200 OK`, `400 Bad Request`, atau `404 Not Found` |
+
+Produk memiliki `id` otomatis, `name` berupa string, dan `price` berupa angka positif. Validasi yang gagal menghasilkan respons `400`. Produk atau ID yang tidak ditemukan menghasilkan respons `404`.
+
+### GET semua produk
+
+```http
+GET http://localhost:3000/products
+```
+
+Respons berupa array JSON, misalnya:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Pensil",
+    "price": 3000
+  }
+]
+```
+
+### GET produk berdasarkan ID
+
+```http
+GET http://localhost:3000/products/1
+```
+
+### POST produk baru
+
+```http
+POST http://localhost:3000/products
+Content-Type: application/json
+```
 
 ```json
 {
@@ -88,23 +140,38 @@ Pilih Body, lalu klik raw, pilih opsi JSON, kemudian masukkan contoh:
 }
 ```
 
-## Build dan Production
+Nama tidak boleh kosong dan harga harus berupa angka positif yang valid.
 
-Untuk melakukan compile TypeScript menjadi JavaScript, jalankan:
+### PUT memperbarui produk
 
-```bash
-npm run build
+ID produk dikirim di body bersama nama dan harga:
+
+```http
+PUT http://localhost:3000/products
+Content-Type: application/json
 ```
 
-Setelah proses build berhasil, jalankan server menggunakan:
-
-```bash
-npm start
+```json
+{
+  "id": 1,
+  "name": "Pensil 2B",
+  "price": 3500
+}
 ```
 
-## Notes
+ID harus berupa bilangan bulat positif. API mengembalikan `404` jika produk dengan ID tersebut tidak ditemukan.
 
-- Data produk disimpan dalam array di dalam aplikasi.
-- Data produk yang ditambahkan melalui POST hanya tersimpan selama server berjalan.
-- Ketika server dihentikan atau dijalankan ulang, data tambahan akan kembali ke kondisi awal.
-- Server harus tetap berjalan ketika melakukan pengujian menggunakan Postman.
+### DELETE produk
+
+```http
+DELETE http://localhost:3000/products/1
+```
+
+Jika berhasil, respons berisi pesan `Produk berhasil dihapus`.
+
+## Catatan database dan dependency
+
+- Dependency proyek tercatat di `package.json` dan `package-lock.json`; setelah clone, jalankan `npm install`.
+- File `.env` dan kredensial PostgreSQL bersifat lokal dan tidak dimasukkan ke Git. Setiap pengguna perlu menyiapkan database serta `.env` sendiri.
+- Migration mencatat struktur tabel, bukan isi produk. Tambahkan produk melalui endpoint POST untuk mengisi database.
+- PostgreSQL dapat dijalankan secara lokal; Docker tidak diperlukan untuk menjalankan proyek ini.

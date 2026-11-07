@@ -1,0 +1,346 @@
+{
+  "info": {
+    "name": "Products API - Urutan Testcase",
+    "description": "13 testcase untuk API produk. Jalankan npm run dev dan npx prisma db seed terlebih dahulu, lalu kirim request berurutan dari 01 sampai 13. Request ini mengikuti format mlbb-shop-testcase.postman_collection.json.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01. Daftar Semua Produk",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products"
+          ]
+        },
+        "description": "GET /products\nHasil yang benar: 200, body berupa array produk."
+      }
+    },
+    {
+      "name": "02. Detail Produk Buku",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/products/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products",
+            "1"
+          ]
+        },
+        "description": "GET /products/1\nPrasyarat: database sudah di-seed sehingga produk Buku memiliki id 1.\nHasil yang benar: 200, body berisi produk Buku."
+      }
+    },
+    {
+      "name": "03. Detail Produk Tidak Ada",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/products/999",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products",
+            "999"
+          ]
+        },
+        "description": "GET /products/999\nHasil yang benar: 404, pesan Produk tidak ditemukan."
+      }
+    },
+    {
+      "name": "04. Tambah Produk Pensil",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products"
+          ]
+        },
+        "description": "POST /products\nHasil yang benar: 201, produk baru memiliki id otomatis.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Produk Postman\",\n  \"price\": 12000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "05. Tambah Produk Nama Kosong",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products"
+          ]
+        },
+        "description": "POST /products\nHasil yang benar: 400, pesan Nama dan harga produk tidak valid.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"\",\n  \"price\": 12000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "06. Tambah Produk Harga Negatif",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products"
+          ]
+        },
+        "description": "POST /products\nHasil yang benar: 400, pesan Nama dan harga produk tidak valid.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Produk Uji\",\n  \"price\": -1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "07. Perbarui Produk Buku",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products"
+          ]
+        },
+        "description": "PUT /products\nPrasyarat: produk Buku hasil seed memiliki id 1.\nHasil yang benar: 200, body berisi nama dan harga yang sudah diperbarui.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": 1,\n  \"name\": \"Buku Postman Diubah\",\n  \"price\": 15000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "08. Perbarui Produk dengan ID Tidak Valid",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products"
+          ]
+        },
+        "description": "PUT /products\nHasil yang benar: 400, pesan ID produk tidak valid.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"abc\",\n  \"name\": \"Produk Uji\",\n  \"price\": 1000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "09. Perbarui Produk Tidak Ada",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products"
+          ]
+        },
+        "description": "PUT /products\nHasil yang benar: 404, pesan Produk tidak ditemukan.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": 999,\n  \"name\": \"Produk Tidak Ada\",\n  \"price\": 1000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "10. Hapus dengan ID Tidak Valid",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/products/abc",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products",
+            "abc"
+          ]
+        },
+        "description": "DELETE /products/abc\nHasil yang benar: 400, pesan ID produk tidak valid."
+      }
+    },
+    {
+      "name": "11. Hapus Produk Tidak Ada",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/products/999",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products",
+            "999"
+          ]
+        },
+        "description": "DELETE /products/999\nHasil yang benar: 404, pesan Produk tidak ditemukan."
+      }
+    },
+    {
+      "name": "12. Hapus Produk Pulpen",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/products/2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products",
+            "2"
+          ]
+        },
+        "description": "DELETE /products/2\nPrasyarat: produk Pulpen hasil seed memiliki id 2.\nHasil yang benar: 200, pesan Produk berhasil dihapus."
+      }
+    },
+    {
+      "name": "13. Detail Produk Setelah Dihapus",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/products/2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "products",
+            "2"
+          ]
+        },
+        "description": "GET /products/2\nJalankan setelah testcase 12.\nHasil yang benar: 404, pesan Produk tidak ditemukan."
+      }
+    }
+  ]
+}

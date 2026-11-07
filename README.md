@@ -63,9 +63,12 @@ Ganti `USER` dan `PASSWORD` dengan kredensial PostgreSQL lokal. Jika password be
 ```bash
 npx prisma generate
 npx prisma migrate dev
+npx prisma db seed
 ```
 
-Migration membuat tabel `Product` di database. Untuk melihat status migration:
+Migration membuat tabel `Product` di database. Perintah seed menambahkan contoh `Buku` dan `Pulpen` jika tabel masih kosong. Jika sudah ada produk, seed dilewati agar tidak menambah duplikat atau mengubah data.
+
+Seed juga dapat dijalankan lagi kapan saja dengan `npx prisma db seed`. Untuk melihat status migration:
 
 ```bash
 npx prisma migrate status
@@ -173,5 +176,5 @@ Jika berhasil, respons berisi pesan `Produk berhasil dihapus`.
 
 - Dependency proyek tercatat di `package.json` dan `package-lock.json`; setelah clone, jalankan `npm install`.
 - File `.env` dan kredensial PostgreSQL bersifat lokal dan tidak dimasukkan ke Git. Setiap pengguna perlu menyiapkan database serta `.env` sendiri.
-- Migration mencatat struktur tabel, bukan isi produk. Tambahkan produk melalui endpoint POST untuk mengisi database.
+- Migration mencatat struktur tabel, sedangkan seed menyiapkan data contoh secara eksplisit. Produk juga dapat ditambahkan melalui endpoint POST.
 - PostgreSQL dapat dijalankan secara lokal; Docker tidak diperlukan untuk menjalankan proyek ini.

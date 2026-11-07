@@ -114,3 +114,34 @@ export async function updateProduct(req: Request, res: Response): Promise<void> 
 
   res.status(200).json(updatedProduct);
 }
+
+// DELETE /products/:id
+export async function deleteProduct(req: Request, res: Response): Promise<void> {
+  const id = Number(req.params.id);
+
+  if (!Number.isInteger(id) || id <= 0) {
+    res.status(400).json({
+      message: 'ID produk tidak valid',
+    });
+    return;
+  }
+
+  const product = await prisma.product.findUnique({
+    where: { id },
+  });
+
+  if (!product) {
+    res.status(404).json({
+      message: 'Produk tidak ditemukan',
+    });
+    return;
+  }
+
+  await prisma.product.delete({
+    where: { id },
+  });
+
+  res.status(200).json({
+    message: 'Produk berhasil dihapus',
+  });
+}

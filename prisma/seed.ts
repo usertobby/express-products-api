@@ -1,21 +1,23 @@
 import prisma from '../src/lib/prisma.js';
 
+const sampleProducts = [
+  { name: 'Pulpen', price: 5000 },
+  { name: 'Buku Tulis', price: 12000 },
+  { name: 'Spidol', price: 8000 },
+  { name: 'Penggaris', price: 6000 },
+  { name: 'Penghapus', price: 3000 },
+];
+
 async function main(): Promise<void> {
-  const productCount = await prisma.product.count();
+  const result = await prisma.$transaction(async (transaction) => {
+    await transaction.$executeRawUnsafe(
+      'TRUNCATE TABLE "Product" RESTART IDENTITY',
+    );
 
-  if (productCount > 0) {
-    console.log(`Seed dilewati; database sudah memiliki ${productCount} produk.`);
-    return;
-  }
-
-  const result = await prisma.product.createMany({
-    data: [
-      { name: 'Buku', price: 15000 },
-      { name: 'Pulpen', price: 5000 },
-    ],
+    return transaction.product.createMany({ data: sampleProducts });
   });
 
-  console.log(`${result.count} produk contoh berhasil ditambahkan.`);
+  console.log(`${result.count} produk contoh berhasil di-seed ulang.`);
 }
 
 main()
